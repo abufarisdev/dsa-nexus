@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --color-background: 0 0% 8%;
+  --color-foreground: 0 0% 95%;
+  --color-card: 280 2% 12%;
+  --color-card-foreground: 0 0% 95%;
+  --color-popover: 280 2% 12%;
+  --color-popover-foreground: 0 0% 95%;
+  --color-primary: 260 100% 60%;
+  --color-primary-foreground: 0 0% 98%;
+  --color-secondary: 320 100% 50%;
+  --color-secondary-foreground: 0 0% 98%;
+  --color-muted: 0 0% 30%;
+  --color-muted-foreground: 0 0% 70%;
+  --color-accent: 200 100% 65%;
+  --color-accent-foreground: 0 0% 98%;
+  --color-destructive: 27 100% 57.7%;
+  --color-destructive-foreground: 0 0% 98%;
+  --color-border: 280 2% 20%;
+  --color-input: 280 1% 15%;
+  --color-ring: 260 100% 60%;
+  --color-chart-1: 260 100% 60%;
+  --color-chart-2: 200 100% 65%;
+  --color-chart-3: 320 100% 50%;
+  --color-chart-4: 270 100% 55%;
+  --color-chart-5: 250 100% 70%;
+  --radius: 0.75rem;
+  --color-sidebar: 280 1% 10%;
+  --color-sidebar-foreground: 0 0% 95%;
+  --color-sidebar-primary: 260 100% 60%;
+  --color-sidebar-primary-foreground: 0 0% 98%;
+  --color-sidebar-accent: 200 100% 65%;
+  --color-sidebar-accent-foreground: 0 0% 98%;
+  --color-sidebar-border: 280 2% 20%;
+  --color-sidebar-ring: 260 100% 60%;
+}
+
+.dark {
+  --color-background: 0 0% 8%;
+  --color-foreground: 0 0% 95%;
+  --color-card: 280 2% 12%;
+  --color-card-foreground: 0 0% 95%;
+  --color-popover: 280 2% 12%;
+  --color-popover-foreground: 0 0% 95%;
+  --color-primary: 260 100% 60%;
+  --color-primary-foreground: 0 0% 98%;
+  --color-secondary: 320 100% 50%;
+  --color-secondary-foreground: 0 0% 98%;
+  --color-muted: 0 0% 30%;
+  --color-muted-foreground: 0 0% 70%;
+  --color-accent: 200 100% 65%;
+  --color-accent-foreground: 0 0% 98%;
+  --color-destructive: 27 100% 57.7%;
+  --color-destructive-foreground: 0 0% 98%;
+  --color-border: 280 2% 20%;
+  --color-input: 280 1% 15%;
+  --color-ring: 260 100% 60%;
+  --color-chart-1: 260 100% 60%;
+  --color-chart-2: 200 100% 65%;
+  --color-chart-3: 320 100% 50%;
+  --color-chart-4: 270 100% 55%;
+  --color-chart-5: 250 100% 70%;
+  --color-sidebar: 280 1% 10%;
+  --color-sidebar-foreground: 0 0% 95%;
+  --color-sidebar-primary: 260 100% 60%;
+  --color-sidebar-primary-foreground: 0 0% 98%;
+  --color-sidebar-accent: 200 100% 65%;
+  --color-sidebar-accent-foreground: 0 0% 98%;
+  --color-sidebar-border: 280 2% 20%;
+  --color-sidebar-ring: 260 100% 60%;
+}
+
+@layer base {
+  body {
+    background-color: hsl(var(--color-background));
+    color: hsl(var(--color-foreground));
+  }
+}
