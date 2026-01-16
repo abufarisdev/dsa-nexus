@@ -1,0 +1,5 @@
+.env
+node_modules/
+verify_*.js
+verify_*.txt
+debug.log
