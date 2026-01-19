@@ -29,17 +29,20 @@ const refreshPortfolio = async (userId) => {
             // Future proof: we should merge heatmaps first to get count.
 
             // Sum Difficulty
-            difficultyBreakdown.easy += stats.difficulty.easy;
-            difficultyBreakdown.medium += stats.difficulty.medium;
-            difficultyBreakdown.hard += stats.difficulty.hard;
+            // Check if difficulty object exists (safe access) and keys exist
+            if (stats.difficulty) {
+                difficultyBreakdown.easy += (stats.difficulty.easy || 0);
+                difficultyBreakdown.medium += (stats.difficulty.medium || 0);
+                difficultyBreakdown.hard += (stats.difficulty.hard || 0);
+            }
 
             // Stats - Streak (Take the maximum across platforms? or active on any?)
             // Let's take the max of any platform for "Best Streak" approach
-            maxStreak = Math.max(maxStreak, stats.streaks.max);
+            maxStreak = Math.max(maxStreak, (stats.streaks && stats.streaks.max) || 0);
 
             // Current streak - complicated if we combine. Let's take max for now.
             // Or if active on *any* platform today/yesterday.
-            currentStreak = Math.max(currentStreak, stats.streaks.current);
+            currentStreak = Math.max(currentStreak, (stats.streaks && stats.streaks.current) || 0);
 
             // Merge Topics
             if (p.topics) {

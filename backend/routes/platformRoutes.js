@@ -4,7 +4,11 @@ const {
     getPortfolio,
     getLeetCodeProfile,
     addLeetCode,
-    syncLeetCode
+    syncLeetCode,
+    addGfg,
+    syncGfg,
+    getGfgProfile,
+    removeGfg
 } = require('../controllers/platformController');
 const authStub = require('../middleware/authStub');
 
@@ -28,5 +32,12 @@ router.get('/platforms/leetcode/:userId', getLeetCodeProfile);
 router.use(authStub);
 router.post('/platforms/leetcode', addLeetCode);
 router.post('/platforms/leetcode/sync', syncLeetCode);
+
+router.post('/platforms/gfg', addGfg);
+router.post('/platforms/gfg/sync', syncGfg);
+router.delete('/platforms/gfg', removeGfg);
+
+// Public GFG Profile
+router.get('/platforms/gfg/:userId', getGfgProfile);
 
 module.exports = router;

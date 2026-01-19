@@ -2,4 +2,9 @@
 node_modules/
 verify_*.js
 verify_*.txt
-debug.log
+
+# Temp & Debug
+debug_*.js
+test_*.js
+*.html
+test_output.txt

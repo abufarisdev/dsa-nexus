@@ -2,13 +2,15 @@ const mongoose = require('mongoose');
 
 const PlatformProfileSchema = new mongoose.Schema({
     userId: { type: String, required: true },
-    platform: { type: String, required: true, enum: ['leetcode'] }, // Add 'github' later
+    platform: { type: String, required: true, enum: ['leetcode', 'gfg'] }, // Add 'github' later
     platformUsername: { type: String, required: true },
     platformProfileUrl: { type: String, default: '' },
 
     stats: {
         totalSolved: { type: Number, default: 0 },
         difficulty: {
+            school: { type: Number, default: 0 },
+            basic: { type: Number, default: 0 },
             easy: { type: Number, default: 0 },
             medium: { type: Number, default: 0 },
             hard: { type: Number, default: 0 }
@@ -21,7 +23,24 @@ const PlatformProfileSchema = new mongoose.Schema({
         }
     },
 
-    topics: { type: Map, of: Number, default: {} }, // e.g., "Arrays": 50
+    topics: { type: Map, of: Number, default: {} },
+
+    profileMeta: {
+        institute: { type: String, default: '' },
+        codingScore: { type: String, default: '0' },
+        rank: { type: String, default: '0' }
+    },
+
+    // Track which data points are available/valid for this platform
+    // Values can be Boolean (true/false) or String ("partial")
+    dataCompleteness: {
+        totalSolved: { type: Boolean, default: true },
+        difficulty: { type: Boolean, default: true },
+        topics: { type: mongoose.Schema.Types.Mixed, default: true }, // Boolean or "partial"
+        heatmap: { type: Boolean, default: true },
+        activeDays: { type: Boolean, default: true },
+        streaks: { type: Boolean, default: true }
+    },
 
     heatmap: [{
         date: String, // YYYY-MM-DD
