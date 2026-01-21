@@ -1,10 +1,19 @@
 const mongoose = require('mongoose');
 
 const PlatformProfileSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
-    platform: { type: String, required: true, enum: ['leetcode'] }, // Add 'github' later
+    // specific to your User model usually
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
+    platform: { 
+        type: String, 
+        required: true, 
+        enum: ['leetcode', 'github'] // Prepared for Github
+    },
     platformUsername: { type: String, required: true },
-    platformProfileUrl: { type: String, default: '' },
+    platformProfileUrl: { type: String, trim: true },
 
     stats: {
         totalSolved: { type: Number, default: 0 },
@@ -21,20 +30,24 @@ const PlatformProfileSchema = new mongoose.Schema({
         }
     },
 
-    topics: { type: Map, of: Number, default: {} }, // e.g., "Arrays": 50
+    // Using Map is perfect here for dynamic keys
+    topics: { type: Map, of: Number, default: {} }, 
 
+    // Changed date to Date type for better querying
     heatmap: [{
-        date: String, // YYYY-MM-DD
-        submissions: Number
+        date: { type: Date, required: true }, 
+        submissions: { type: Number, default: 0 }
     }],
 
     awards: [{
         title: String,
         iconUrl: String,
-        earnedAt: String // Date string or generic string
+        earnedAt: Date 
     }],
 
     lastSyncedAt: { type: Date, default: Date.now }
+}, {
+    timestamps: true // Automatically adds createdAt and updatedAt
 });
 
 // Composite index to ensure unique platform profile per user
