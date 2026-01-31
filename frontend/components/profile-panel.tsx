@@ -3,12 +3,55 @@
 import { useState } from "react"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Edit2, Mail, Link, Image, Globe, FileText, MapPin, GraduationCap, ExternalLink, CheckCircle2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Mail, Link, Image, Globe, FileText, MapPin, GraduationCap, ExternalLink, CheckCircle2 } from "lucide-react"
+import { EditProfileModal } from "@/components/profile/EditProfileModal"
+import { useProfileStore } from "@/lib/profile-store"
 
 export default function ProfilePanel() {
-  const [isProfilePublic, setIsProfilePublic] = useState(true)
   const [isProblemStatsOpen, setIsProblemStatsOpen] = useState(true)
   const [isDevStatsOpen, setIsDevStatsOpen] = useState(false)
+  
+  const {
+    name,
+    username,
+    about,
+    location,
+    education,
+    isProfilePublic,
+    achievements,
+    platforms,
+    updateProfile,
+    toggleProfilePublic,
+    saveToServer
+  } = useProfileStore()
+
+  const handleSaveProfile = async (data: any) => {
+    // Update local store immediately
+    updateProfile({
+      name: data.name,
+      username: `@${data.username}`,
+      about: data.about,
+      location: data.location,
+      education: data.education
+    })
+    
+    // Try to save to server (handles errors gracefully)
+    try {
+      await saveToServer()
+    } catch (error) {
+      // Error is already handled in saveToServer, just continue
+      console.log('Profile saved locally')
+    }
+  }
+
+  const getInitials = () => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   return (
     <aside className="w-[300px] shrink-0 h-full overflow-hidden border-r border-slate-800 bg-gradient-to-b from-slate-950 to-slate-900 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(59,130,246,0.1)] rounded-r-xl flex flex-col">
@@ -22,26 +65,34 @@ export default function ProfilePanel() {
           </div>
           <Switch 
             checked={isProfilePublic}
-            onCheckedChange={setIsProfilePublic}
+            onCheckedChange={toggleProfilePublic}
             className="data-[state=checked]:bg-green-500"
           />
         </div>
 
-        <div className="flex flex-col items-center text-center gap-4 pb-4 border-b border-slate-800/80">
+        <div className="flex flex-col items-center text-center gap-4 pb-4 border-b border-slate-800/80 relative">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-900/30">
-              <span className="text-white">HR</span>
+              <span className="text-white">{getInitials()}</span>
             </div>
             <div className="absolute inset-0 rounded-full ring-2 ring-blue-500/30 ring-offset-2 ring-offset-slate-950"></div>
-            <button className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-slate-700 transition-colors">
-              <Edit2 className="w-3.5 h-3.5 text-slate-300" />
-            </button>
+            
+            <EditProfileModal 
+              initialData={{
+                name,
+                username: username.replace('@', ''),
+                about,
+                location,
+                education
+              }}
+              onSave={handleSaveProfile}
+            />
           </div>
 
           <div>
-            <div className="font-bold text-xl text-white">Hassan Rahman</div>
+            <div className="font-bold text-xl text-white">{name}</div>
             <div className="flex items-center justify-center gap-1.5 mt-1">
-              <span className="text-sm text-blue-400">@Rahman</span>
+              <span className="text-sm text-blue-400">{username}</span>
               <CheckCircle2 className="w-4 h-4 text-green-500 fill-green-500/20" />
             </div>
           </div>
@@ -75,11 +126,11 @@ export default function ProfilePanel() {
         <div className="space-y-3 pb-4 border-b border-slate-800/80">
           <div className="flex items-center gap-3 text-sm text-slate-300">
             <MapPin className="w-4 h-4 text-slate-500" />
-            <span>India</span>
+            <span>{location}</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-300">
             <GraduationCap className="w-4 h-4 text-slate-500" />
-            <span className="truncate">University of Engineering and Technology</span>
+            <span className="truncate">{education}</span>
           </div>
         </div>
       </div>
@@ -89,7 +140,7 @@ export default function ProfilePanel() {
         <div className="space-y-2">
           <h4 className="text-xs uppercase tracking-wider text-slate-500 font-medium">ABOUT</h4>
           <p className="text-sm text-slate-400 leading-relaxed">
-            Full-stack developer passionate about building scalable applications and solving complex problems. Currently focused on modern web technologies and system design.
+            {about}
           </p>
         </div>
 
@@ -116,10 +167,17 @@ export default function ProfilePanel() {
                   <span className="text-sm text-slate-300">LeetCode</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {platforms.leetcode.verified && (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  )}
+                  <a 
+                    href={platforms.leetcode.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <ExternalLink className="w-4 h-4 text-slate-500 hover:text-blue-400" />
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -131,10 +189,17 @@ export default function ProfilePanel() {
                   <span className="text-sm text-slate-300">GeeksForGeeks</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {platforms.geeksforgeeks.verified && (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  )}
+                  <a 
+                    href={platforms.geeksforgeeks.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <ExternalLink className="w-4 h-4 text-slate-500 hover:text-blue-400" />
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -146,10 +211,17 @@ export default function ProfilePanel() {
                   <span className="text-sm text-slate-300">HackerRank</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {platforms.hackerrank.verified && (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  )}
+                  <a 
+                    href={platforms.hackerrank.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <ExternalLink className="w-4 h-4 text-slate-500 hover:text-blue-400" />
-                  </button>
+                  </a>
                 </div>
               </div>
 
@@ -188,31 +260,43 @@ export default function ProfilePanel() {
                   <span className="text-sm text-slate-300">GitHub</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {platforms.github.verified && (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  )}
+                  <a 
+                    href={platforms.github.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <ExternalLink className="w-4 h-4 text-slate-500 hover:text-blue-400" />
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Additional content */}
+        {/* Achievements Section */}
         <div className="space-y-3">
           <div className="bg-slate-900/30 rounded-lg p-3 border border-slate-800/50">
             <h5 className="text-sm font-medium text-slate-300 mb-2">Achievements</h5>
             <div className="flex flex-wrap gap-2">
-              <span className="px-2 py-1 text-xs bg-blue-900/30 text-blue-300 rounded border border-blue-800/50">Top 5%</span>
-              <span className="px-2 py-1 text-xs bg-green-900/30 text-green-300 rounded border border-green-800/50">100+ Problems</span>
-              <span className="px-2 py-1 text-xs bg-purple-900/30 text-purple-300 rounded border border-purple-800/50">2y Experience</span>
+              {achievements.map((achievement, index) => (
+                <span 
+                  key={index}
+                  className="px-2 py-1 text-xs bg-blue-900/30 text-blue-300 rounded border border-blue-800/50"
+                >
+                  {achievement}
+                </span>
+              ))}
             </div>
           </div>
           
           <div className="text-xs text-slate-500 pt-2 border-t border-slate-800/50">
             <div className="flex justify-between">
               <span>Last Updated</span>
-              <span className="text-slate-400">2 days ago</span>
+              <span className="text-slate-400">Just now</span>
             </div>
           </div>
         </div>
