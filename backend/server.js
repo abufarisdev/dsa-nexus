@@ -1,11 +1,12 @@
 const express = require('express');
 const dotenv = require('dotenv');
+// Load env vars immediately
+dotenv.config();
+
 const cors = require('cors');
 const connectDB = require('./config/db');
 const platformRoutes = require('./routes/platformRoutes');
-
-// Load env vars
-dotenv.config();
+const githubRoutes = require('./routes/githubRoutes');
 
 // Connect to database
 connectDB();
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 });
 // Routes
 app.use('/api', platformRoutes);
+app.use('/api/devStats/github', githubRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
