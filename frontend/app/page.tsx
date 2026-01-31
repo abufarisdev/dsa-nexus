@@ -58,7 +58,7 @@ export default function LandingPage() {
               DSA Nexus
             </span>
           </div>
-          <Link href="/dashboard">
+          <Link href="/auth">
             <Button variant="outline" className="gap-2 bg-transparent">
               Sign In
               <ArrowRight className="w-4 h-4" />
@@ -66,7 +66,7 @@ export default function LandingPage() {
           </Link>
         </nav>
 
-        {/* Hero Section */}  
+        {/* Hero Section */}
         <section className="px-6 md:px-12 py-20 md:py-32 text-center">
           <div className="max-w-3xl mx-auto space-y-8">
             {/* Gradient text logo */}

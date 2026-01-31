@@ -7,7 +7,7 @@ import { PlatformBreakdown } from "@/components/platform-breakdown"
 import { Achievements } from "@/components/achievements"
 import { TopicAnalysis } from "@/components/topic-analysis"
 import { TrendingUp, Flame, Link2 } from "lucide-react"
-import DifficultyDistribution from "@/components/difficulty-distribution"
+import { DifficultyDistribution } from "@/components/difficulty-distribution"
 
 
 
@@ -67,12 +67,12 @@ function DashboardContent() {
           <div className="lg:col-span-8">
             <Achievements />
           </div>
-  {/* Problem Solved Distribution */}
-<div className="lg:col-span-4">
-  <DifficultyDistribution />
-</div>
+          {/* Problem Solved Distribution */}
+          <div className="lg:col-span-4">
+            <DifficultyDistribution />
+          </div>
 
-{/* ROW 3: DSA Topic Analysis (full width) */} <div className="lg:col-span-12"> <TopicAnalysis /> </div>
+          {/* ROW 3: DSA Topic Analysis (full width) */} <div className="lg:col-span-12"> <TopicAnalysis /> </div>
 
 
         </div>

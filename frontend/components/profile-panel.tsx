@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp, Mail, Link, Image, Globe, FileText, MapPin, GraduationCap, ExternalLink, CheckCircle2 } from "lucide-react"
 import { EditProfileModal } from "@/components/profile/EditProfileModal"
 import { useProfileStore } from "@/lib/profile-store"
+import { api } from "@/lib/api"
+import { useEffect } from "react"
 
 export default function ProfilePanel() {
   const [isProblemStatsOpen, setIsProblemStatsOpen] = useState(true)
   const [isDevStatsOpen, setIsDevStatsOpen] = useState(false)
-  
+
   const {
     name,
     username,
@@ -25,6 +27,26 @@ export default function ProfilePanel() {
     saveToServer
   } = useProfileStore()
 
+  // Hydrate store with real connection status
+  useEffect(() => {
+    const checkConnections = async () => {
+      try {
+        // Check GitHub
+        const ghData = await api.getGitHubStats().catch(() => null);
+        updateProfile({
+          platforms: {
+            ...platforms,
+            github: { ...platforms.github, verified: !!ghData },
+          }
+        });
+      } catch (e) {
+        console.error("Failed to check connections", e);
+      }
+    };
+
+    checkConnections();
+  }, []); // Run once on mount
+
   const handleSaveProfile = async (data: any) => {
     // Update local store immediately
     updateProfile({
@@ -34,7 +56,7 @@ export default function ProfilePanel() {
       location: data.location,
       education: data.education
     })
-    
+
     // Try to save to server (handles errors gracefully)
     try {
       await saveToServer()
@@ -55,7 +77,7 @@ export default function ProfilePanel() {
 
   return (
     <aside className="w-[300px] shrink-0 h-full overflow-hidden border-r border-slate-800 bg-gradient-to-b from-slate-950 to-slate-900 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(59,130,246,0.1)] rounded-r-xl flex flex-col">
-      
+
       {/* Fixed Header Section */}
       <div className="shrink-0 space-y-4 p-6">
         <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
@@ -63,7 +85,7 @@ export default function ProfilePanel() {
             <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-[0_0_8px_#3b82f6]" />
             <span>Public Profile</span>
           </div>
-          <Switch 
+          <Switch
             checked={isProfilePublic}
             onCheckedChange={toggleProfilePublic}
             className="data-[state=checked]:bg-green-500"
@@ -76,8 +98,8 @@ export default function ProfilePanel() {
               <span className="text-white">{getInitials()}</span>
             </div>
             <div className="absolute inset-0 rounded-full ring-2 ring-blue-500/30 ring-offset-2 ring-offset-slate-950"></div>
-            
-            <EditProfileModal 
+
+            <EditProfileModal
               initialData={{
                 name,
                 username: username.replace('@', ''),
@@ -98,8 +120,8 @@ export default function ProfilePanel() {
           </div>
         </div>
 
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full bg-slate-900/50 border-slate-700 text-orange-400 hover:text-orange-300 hover:bg-slate-800/50 hover:border-orange-500/30 hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.3)] transition-all"
         >
           Get your Card
@@ -146,17 +168,17 @@ export default function ProfilePanel() {
 
         {/* Problem Solving Stats Accordion */}
         <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl border border-slate-800/60 overflow-hidden">
-          <button 
+          <button
             onClick={() => setIsProblemStatsOpen(!isProblemStatsOpen)}
             className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-slate-800/30 transition-colors"
           >
             <span className="font-medium text-slate-200">Problem Solving Stats</span>
-            {isProblemStatsOpen ? 
-              <ChevronUp className="w-4 h-4 text-slate-500" /> : 
+            {isProblemStatsOpen ?
+              <ChevronUp className="w-4 h-4 text-slate-500" /> :
               <ChevronDown className="w-4 h-4 text-slate-500" />
             }
           </button>
-          
+
           {isProblemStatsOpen && (
             <div className="px-4 pb-4 space-y-3">
               <div className="flex items-center justify-between group hover:bg-slate-800/30 p-2 rounded-lg transition-colors">
@@ -170,7 +192,7 @@ export default function ProfilePanel() {
                   {platforms.leetcode.verified && (
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                   )}
-                  <a 
+                  <a
                     href={platforms.leetcode.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -192,7 +214,7 @@ export default function ProfilePanel() {
                   {platforms.geeksforgeeks.verified && (
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                   )}
-                  <a 
+                  <a
                     href={platforms.geeksforgeeks.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -214,7 +236,7 @@ export default function ProfilePanel() {
                   {platforms.hackerrank.verified && (
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                   )}
-                  <a 
+                  <a
                     href={platforms.hackerrank.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -225,8 +247,8 @@ export default function ProfilePanel() {
                 </div>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full mt-2 border-dashed border-slate-700 text-slate-400 hover:text-slate-300 hover:border-blue-500/50 hover:bg-slate-800/30"
               >
                 + Add Platform
@@ -237,17 +259,17 @@ export default function ProfilePanel() {
 
         {/* Development Stats Accordion */}
         <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl border border-slate-800/60 overflow-hidden">
-          <button 
+          <button
             onClick={() => setIsDevStatsOpen(!isDevStatsOpen)}
             className="w-full px-4 py-3.5 flex items-center justify-between hover:bg-slate-800/30 transition-colors"
           >
             <span className="font-medium text-slate-200">Development Stats</span>
-            {isDevStatsOpen ? 
-              <ChevronUp className="w-4 h-4 text-slate-500" /> : 
+            {isDevStatsOpen ?
+              <ChevronUp className="w-4 h-4 text-slate-500" /> :
               <ChevronDown className="w-4 h-4 text-slate-500" />
             }
           </button>
-          
+
           {isDevStatsOpen && (
             <div className="px-4 pb-4 space-y-3">
               <div className="flex items-center justify-between group hover:bg-slate-800/30 p-2 rounded-lg transition-colors">
@@ -263,7 +285,7 @@ export default function ProfilePanel() {
                   {platforms.github.verified && (
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                   )}
-                  <a 
+                  <a
                     href={platforms.github.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -283,7 +305,7 @@ export default function ProfilePanel() {
             <h5 className="text-sm font-medium text-slate-300 mb-2">Achievements</h5>
             <div className="flex flex-wrap gap-2">
               {achievements.map((achievement, index) => (
-                <span 
+                <span
                   key={index}
                   className="px-2 py-1 text-xs bg-blue-900/30 text-blue-300 rounded border border-blue-800/50"
                 >
@@ -292,7 +314,7 @@ export default function ProfilePanel() {
               ))}
             </div>
           </div>
-          
+
           <div className="text-xs text-slate-500 pt-2 border-t border-slate-800/50">
             <div className="flex justify-between">
               <span>Last Updated</span>

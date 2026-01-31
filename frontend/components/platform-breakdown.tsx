@@ -3,13 +3,15 @@
 import { Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const platforms = [
-  { name: "LeetCode", solved: 312, streak: 45, icon: "LC", color: "from-orange-500/20 to-orange-500/10" },
-  { name: "Codeforces", solved: 156, streak: 28, icon: "CF", color: "from-blue-500/20 to-blue-500/10" },
-  { name: "AtCoder", solved: 89, streak: 12, icon: "AT", color: "from-green-500/20 to-green-500/10" },
-]
+interface PlatformBreakdownProps {
+  platforms?: any[]; // Replace with strict type
+  onManage?: () => void;
+}
 
-export function PlatformBreakdown() {
+export function PlatformBreakdown({ platforms }: PlatformBreakdownProps) {
+  // If no data passed, show empty or loading state (or fallback if allowed, but requirement says no hardcoded fallback)
+  // For now, if array is empty, it just renders nothing.
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
@@ -20,7 +22,7 @@ export function PlatformBreakdown() {
         </Button>
       </div>
       <div className="grid gap-4">
-        {platforms.map((platform) => (
+        {platforms && platforms.map((platform) => (
           <div
             key={platform.name}
             className={`p-5 rounded-2xl border border-slate-800/30 bg-gradient-to-br ${platform.color} backdrop-blur-xl`}
@@ -42,6 +44,9 @@ export function PlatformBreakdown() {
             </div>
           </div>
         ))}
+        {(!platforms || platforms.length === 0) && (
+          <div className="text-center text-slate-500 py-4 text-xs">No platforms connected.</div>
+        )}
       </div>
     </div>
   )

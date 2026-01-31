@@ -1,14 +1,13 @@
 "use client"
 
-const topics = [
-  { name: "Arrays & Hashing", solved: 42, total: 50, percentage: 84 },
-  { name: "Trees & Graphs", solved: 38, total: 48, percentage: 79 },
-  { name: "Dynamic Programming", solved: 25, total: 40, percentage: 62 },
-  { name: "Two Pointers", solved: 31, total: 35, percentage: 88 },
-  { name: "Linked Lists", solved: 28, total: 32, percentage: 87 },
-]
+interface TopicAnalysisProps {
+  topics?: { name: string; solved: number; total: number; percentage: number }[];
+}
 
-export function TopicAnalysis() {
+export function TopicAnalysis({ topics }: TopicAnalysisProps) {
+  // If no topics, maybe show empty state or nothing
+  if (!topics || topics.length === 0) return null;
+
   return (
     <div className="p-6 rounded-2xl border border-slate-800/30 bg-gradient-to-br from-slate-900 to-slate-900/50 backdrop-blur-xl">
       <div className="flex items-center justify-between mb-6">
@@ -19,7 +18,7 @@ export function TopicAnalysis() {
       </div>
 
       <div className="space-y-5">
-        {topics.map((topic, idx) => (
+        {topics.slice(0, 5).map((topic, idx) => (
           <div key={idx}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium">{topic.name}</span>

@@ -2,14 +2,21 @@
 
 import React, { useMemo } from "react"
 
-const difficultyData = [
-  { name: "Easy", value: 190, color: "#10b981" },   // green
-  { name: "Medium", value: 179, color: "#f59e0b" }, // yellow
-  { name: "Hard", value: 12, color: "#ef4444" },   // red
-]
+export interface DifficultyDistributionProps {
+  easy?: number;
+  medium?: number;
+  hard?: number;
+}
 
-export default function DifficultyDistribution() {
-  const total = useMemo(() => difficultyData.reduce((s, d) => s + d.value, 0), [])
+export function DifficultyDistribution({ easy = 0, medium = 0, hard = 0 }: DifficultyDistributionProps) {
+
+  const difficultyData = useMemo(() => [
+    { name: "Easy", value: easy, color: "#10b981" },   // green
+    { name: "Medium", value: medium, color: "#f59e0b" }, // yellow
+    { name: "Hard", value: hard, color: "#ef4444" },   // red
+  ], [easy, medium, hard]);
+
+  const total = useMemo(() => difficultyData.reduce((s, d) => s + d.value, 0), [difficultyData])
   const radius = 52
   const stroke = 14
   const circumference = 2 * Math.PI * radius
@@ -18,7 +25,8 @@ export default function DifficultyDistribution() {
   const segments = useMemo(() => {
     let cumulative = 0
     return difficultyData.map((d) => {
-      const length = (d.value / total) * circumference
+      // Avoid division by zero
+      const length = total > 0 ? (d.value / total) * circumference : 0;
       const offset = cumulative
       cumulative += length
       return {
@@ -27,7 +35,7 @@ export default function DifficultyDistribution() {
         offset,
       }
     })
-  }, [total])
+  }, [total, difficultyData, circumference])
 
   return (
     <div className="p-6 rounded-2xl border border-slate-800/30 bg-gradient-to-br from-slate-900 to-slate-900/50 backdrop-blur-xl">
