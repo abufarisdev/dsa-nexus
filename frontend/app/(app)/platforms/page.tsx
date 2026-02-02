@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardLayout from "@/app/dashboard-layout"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Check, AlertCircle, Loader2, Plus } from "lucide-react"
@@ -157,9 +157,5 @@ function PlatformsContent() {
 }
 
 export default function PlatformsPage() {
-  return (
-    <DashboardLayout>
-      <PlatformsContent />
-    </DashboardLayout>
-  )
+  return <PlatformsContent />
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardLayout from "@/app/dashboard-layout"
+
 import {
   BarChart,
   Bar,
@@ -179,9 +179,5 @@ function AnalyticsContent() {
 }
 
 export default function AnalyticsPage() {
-  return (
-    <DashboardLayout>
-      <AnalyticsContent />
-    </DashboardLayout>
-  )
+  return <AnalyticsContent />
 }

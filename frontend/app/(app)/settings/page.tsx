@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardLayout from "@/app/dashboard-layout"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { LogOut, Bell, Lock, User } from "lucide-react"
@@ -129,9 +129,5 @@ function SettingsContent() {
 }
 
 export default function SettingsPage() {
-  return (
-    <DashboardLayout>
-      <SettingsContent />
-    </DashboardLayout>
-  )
+  return <SettingsContent />
 }

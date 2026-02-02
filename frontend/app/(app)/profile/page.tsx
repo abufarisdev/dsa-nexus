@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardLayout from "@/app/dashboard-layout"
+
 import { Button } from "@/components/ui/button"
 import { Copy, Share2 } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts"
@@ -124,9 +124,5 @@ function ProfileContent() {
 }
 
 export default function ProfilePage() {
-  return (
-    <DashboardLayout>
-      <ProfileContent />
-    </DashboardLayout>
-  )
+  return <ProfileContent />
 }

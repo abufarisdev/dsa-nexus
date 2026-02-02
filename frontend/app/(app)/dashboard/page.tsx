@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardLayout from "@/app/dashboard-layout"
+
 import { StatsCard } from "@/components/stats-card"
 import { ActivityHeatmap } from "@/components/activity-heatmap"
 import { PlatformBreakdown } from "@/components/platform-breakdown"
@@ -83,9 +83,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <DashboardLayout>
-      <DashboardContent />
-    </DashboardLayout>
-  )
+  return <DashboardContent />
 }
