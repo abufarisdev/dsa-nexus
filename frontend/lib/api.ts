@@ -57,11 +57,11 @@ const getAuthHeaders = () => {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     return headers;
 };
 
@@ -124,7 +124,7 @@ export const api = {
     },
 
     logout: async (): Promise<any> => {
-        const res = await fetch(`${API_BASE}/auth/logout`, { 
+        const res = await fetch(`${API_BASE}/auth/logout`, {
             method: 'POST',
             headers: getAuthHeaders(),
             credentials: 'include'
@@ -149,6 +149,25 @@ export const api = {
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error("Failed to update profile");
+        return res.json();
+    },
+
+    // Basic Info Tab
+    getBasicInfo: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/basic-info`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch basic info");
+        return res.json();
+    },
+
+    updateBasicInfo: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/basic-info`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Failed to update basic info");
         return res.json();
     },
 

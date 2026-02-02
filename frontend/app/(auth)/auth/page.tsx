@@ -24,7 +24,7 @@ export default function AuthPage() {
   const handleOTPSuccess = (data: any) => {
     if (data.loginAllowed) {
       // User exists, store token and redirect
-      localStorage.setItem('token', data.user.token)
+      localStorage.setItem('token', data.token)
       // You might want to fetch user profile here
       window.location.href = "/dashboard"
     } else if (data.signupRequired) {
@@ -33,9 +33,9 @@ export default function AuthPage() {
     }
   }
 
-  const handleSignupSuccess = (user: any) => {
+  const handleSignupSuccess = (data: any) => {
     // Store token and redirect
-    localStorage.setItem('token', user.token)
+    localStorage.setItem('token', data.token)
     window.location.href = "/dashboard"
   }
 
@@ -104,7 +104,7 @@ export default function AuthPage() {
             <div className="relative">
               {/* Background Glow Effect */}
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-cyan-500/20 rounded-3xl blur-xl opacity-50" />
-              
+
               {/* Glass Card */}
               <div className="relative rounded-2xl border border-slate-800/50 bg-slate-900/40 backdrop-blur-xl p-6 md:p-8 shadow-2xl">
                 {/* Logo and Header */}

@@ -10,19 +10,15 @@ const UserSchema = new mongoose.Schema({
     lastName: { type: String, trim: true },
     isEmailVerified: { type: Boolean, default: false },
 
-    // Legacy/Profile Fields
-    name: { type: String, default: '' }, // Kept for backward compat or aggregated name
-    avatarUrl: { type: String, default: '' },
-    bio: { type: String, default: '' },
-    location: { type: String, default: '' },
-    university: { type: String, default: '' },
-    socialLinks: {
-        github: { type: String, default: '' },
-        linkedin: { type: String, default: '' },
-        twitter: { type: String, default: '' },
-        website: { type: String, default: '' }
+    // Profile Fields
+    profile: {
+        bio: { type: String, maxLength: 200, default: '' },
+        country: { type: String, default: '' },
+        avatarUrl: { type: String, default: '' }
     },
-    isPublicProfile: { type: Boolean, default: true },
+
+    // Legacy mapping (optional, keeping for safety if used elsewhere, but ideally should rely on profile object)
+    username: { type: String, required: true, unique: true, trim: true },
     createdAt: { type: Date, default: Date.now }
 });
 

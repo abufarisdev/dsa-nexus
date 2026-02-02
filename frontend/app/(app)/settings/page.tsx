@@ -1,133 +1,83 @@
 "use client"
 
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { LogOut, Bell, Lock, User } from "lucide-react"
-
-function SettingsContent() {
-  return (
-    <div className="px-6 md:px-12 py-12">
-      <div className="max-w-2xl mx-auto space-y-12">
-        {/* Page Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-slate-400">Manage your account and preferences</p>
-        </div>
-
-        {/* Profile Settings */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Profile Information
-          </h2>
-          <div className="p-6 rounded-xl border border-slate-800/30 bg-gradient-to-br from-slate-900/40 to-slate-900/20 backdrop-blur-xl space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Full Name</label>
-              <Input defaultValue="John Dev" className="bg-slate-900/50 border-slate-800/50" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Email Address</label>
-              <Input type="email" defaultValue="john@example.com" className="bg-slate-900/50 border-slate-800/50" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Bio</label>
-              <textarea
-                defaultValue="Full-stack developer passionate about DSA and problem solving"
-                className="w-full p-3 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-50 text-sm resize-none"
-                rows={3}
-              />
-            </div>
-            <Button className="w-full">Save Changes</Button>
-          </div>
-        </div>
-
-        {/* Notification Preferences */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            Notifications
-          </h2>
-          <div className="p-6 rounded-xl border border-slate-800/30 bg-gradient-to-br from-slate-900/40 to-slate-900/20 backdrop-blur-xl space-y-4">
-            <div className="flex items-center justify-between">
-              <label>Daily problem reminders</label>
-              <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
-            </div>
-            <div className="flex items-center justify-between">
-              <label>Weekly progress reports</label>
-              <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
-            </div>
-            <div className="flex items-center justify-between">
-              <label>Platform sync notifications</label>
-              <input type="checkbox" defaultChecked className="w-4 h-4 rounded" />
-            </div>
-          </div>
-        </div>
-
-        {/* Security Settings */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Lock className="w-5 h-5" />
-            Security
-          </h2>
-          <div className="p-6 rounded-xl border border-slate-800/30 bg-gradient-to-br from-slate-900/40 to-slate-900/20 backdrop-blur-xl space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Current Password</label>
-              <Input type="password" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">New Password</label>
-              <Input type="password" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Confirm New Password</label>
-              <Input type="password" />
-            </div>
-            <Button className="w-full">Update Password</Button>
-          </div>
-        </div>
-
-        {/* Sync Preferences */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Sync Preferences</h2>
-          <div className="p-6 rounded-xl border border-slate-800/30 bg-gradient-to-br from-slate-900/40 to-slate-900/20 backdrop-blur-xl space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sync Frequency</label>
-              <select
-                defaultValue="hourly"
-                className="w-full p-2 rounded-lg bg-slate-900/50 border border-slate-800/50 text-slate-50"
-              >
-                <option value="15min">Every 15 minutes</option>
-                <option value="30min">Every 30 minutes</option>
-                <option value="hourly">Hourly</option>
-                <option value="daily">Daily</option>
-              </select>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Last synced:</span>
-              <span className="text-slate-400">2 hours ago</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Danger Zone */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-red-500">Danger Zone</h2>
-          <div className="p-6 rounded-xl border border-red-900/30 bg-gradient-to-br from-red-950/40 to-red-950/20 backdrop-blur-xl space-y-4">
-            <p className="text-sm text-slate-400">
-              Once you delete your account, there is no going back. Please be certain.
-            </p>
-            <Button variant="destructive" className="w-full gap-2">
-              <LogOut className="w-4 h-4" />
-              Delete Account
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BasicInfoTab } from "@/components/settings/basic-info-tab"
+import { User, Shield, CreditCard, Layers } from "lucide-react"
 
 export default function SettingsPage() {
-  return <SettingsContent />
+  return (
+    <div className="container max-w-6xl mx-auto py-10 px-4 md:px-6">
+      <Tabs defaultValue="basic-info" className="flex flex-col md:flex-row gap-8 items-start w-full">
+
+        {/* Left Column: Navigation */}
+        <aside className="w-full md:w-64 flex-shrink-0 space-y-6">
+          <div className="space-y-1 px-1">
+            <h1 className="text-2xl font-bold">Settings</h1>
+            <p className="text-sm text-slate-400">Manage account</p>
+          </div>
+
+          <TabsList className="flex flex-col h-auto bg-transparent space-y-1 p-0 items-stretch bg-transparent border-0">
+            <TabsTrigger
+              value="basic-info"
+              className="justify-start px-4 py-3 data-[state=active]:bg-slate-800/80 data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 rounded-lg transition-all"
+            >
+              <User className="w-4 h-4 mr-3" />
+              Basic Info
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="profile-details"
+              className="justify-start px-4 py-3 data-[state=active]:bg-slate-800/80 data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 rounded-lg transition-all"
+            >
+              <Layers className="w-4 h-4 mr-3" />
+              Profile Details
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="platforms"
+              className="justify-start px-4 py-3 data-[state=active]:bg-slate-800/80 data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 rounded-lg transition-all"
+            >
+              <Shield className="w-4 h-4 mr-3" />
+              Platforms
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="accounts"
+              className="justify-start px-4 py-3 data-[state=active]:bg-slate-800/80 data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-slate-200 hover:bg-slate-800/30 rounded-lg transition-all"
+            >
+              <CreditCard className="w-4 h-4 mr-3" />
+              Accounts
+            </TabsTrigger>
+          </TabsList>
+        </aside>
+
+
+        {/* Right Column: Content */}
+        <div className="flex-1 w-full min-w-0">
+          <TabsContent value="basic-info" className="mt-0">
+            <BasicInfoTab />
+          </TabsContent>
+
+          <TabsContent value="profile-details" className="mt-0">
+            <div className="p-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
+              Profile Details tab content coming soon.
+            </div>
+          </TabsContent>
+
+          <TabsContent value="platforms" className="mt-0">
+            <div className="p-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
+              Platforms tab content coming soon.
+            </div>
+          </TabsContent>
+
+          <TabsContent value="accounts" className="mt-0">
+            <div className="p-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
+              Accounts tab content coming soon.
+            </div>
+          </TabsContent>
+        </div>
+
+      </Tabs>
+    </div>
+  )
 }

@@ -31,7 +31,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>("weak")
   const [acceptedTerms, setAcceptedTerms] = useState(false) // Add this state
-  
+
   // Check password strength
   useEffect(() => {
     const password = formData.password
@@ -90,9 +90,9 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
+
     setIsLoading(true)
 
     try {
@@ -107,8 +107,8 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
       })
 
       toast.success("Account created successfully!")
-      onSuccess(data.user)
-      
+      onSuccess(data)
+
     } catch (err: any) {
       setErrors({ submit: err.message || "Something went wrong. Please try again." })
       toast.error(err.message || "Registration failed")
@@ -122,7 +122,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
       ...prev,
       [e.target.name]: e.target.value
     }))
-    
+
     // Clear error for this field
     if (errors[e.target.name]) {
       setErrors(prev => ({ ...prev, [e.target.name]: "" }))
@@ -200,7 +200,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
             className="bg-slate-900/50 border-slate-800/50"
           />
         </div>
-        
+
         <Input
           label="Username"
           name="username"
@@ -213,7 +213,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
           error={errors.username}
           className="bg-slate-900/50 border-slate-800/50"
         />
-        
+
         <div className="space-y-2">
           <div className="relative">
             <Input
@@ -236,27 +236,26 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          
+
           {/* Password Strength Indicator */}
           {formData.password && (
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400">Password strength</span>
-                <span className={`font-medium ${
-                  passwordStrength === "weak" ? "text-red-400" :
-                  passwordStrength === "medium" ? "text-yellow-400" :
-                  "text-green-400"
-                }`}>
+                <span className={`font-medium ${passwordStrength === "weak" ? "text-red-400" :
+                    passwordStrength === "medium" ? "text-yellow-400" :
+                      "text-green-400"
+                  }`}>
                   {getPasswordStrengthText()}
                 </span>
               </div>
               <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ 
+                  animate={{
                     width: passwordStrength === "weak" ? "33%" :
-                           passwordStrength === "medium" ? "66%" :
-                           "100%" 
+                      passwordStrength === "medium" ? "66%" :
+                        "100%"
                   }}
                   transition={{ duration: 0.3 }}
                   className={`h-full ${getPasswordStrengthColor()}`}
@@ -265,7 +264,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
             </div>
           )}
         </div>
-        
+
         <div className="relative">
           <Input
             label="Confirm Password"
@@ -300,8 +299,8 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
               onChange={(e) => setAcceptedTerms(e.target.checked)}
               className="sr-only peer"
             />
-            <label 
-              htmlFor="terms-checkbox" 
+            <label
+              htmlFor="terms-checkbox"
               className="flex items-center justify-center w-4 h-4 rounded border border-slate-700 bg-slate-900/50 cursor-pointer peer-checked:bg-gradient-to-r peer-checked:from-blue-600/20 peer-checked:to-purple-600/20"
             >
               {acceptedTerms && (

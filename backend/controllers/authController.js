@@ -85,6 +85,7 @@ exports.verifyOTP = async (req, res) => {
             return res.json({
                 signupRequired: false,
                 loginAllowed: true,
+                token, // Return token for client-side storage
                 user: {
                     id: user._id,
                     username: user.username,
@@ -156,6 +157,7 @@ exports.signup = async (req, res) => {
 
         res.status(201).json({
             message: 'Account created successfully',
+            token, // Return token for client-side storage
             user: {
                 id: newUser._id,
                 username: newUser.username,

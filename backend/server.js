@@ -10,6 +10,7 @@ const connectDB = require('./config/db');
 const platformRoutes = require('./routes/platformRoutes');
 const githubRoutes = require('./routes/githubRoutes');
 const authRoutes = require('./routes/authRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 // Connect to database
 connectDB();
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/api', platformRoutes);
 app.use('/api/devStats/github', githubRoutes);
 app.use('/api/auth', authRoutes); // Auth Routes (Request OTP, Verify OTP, Signup)
+app.use('/api/profile', profileRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
