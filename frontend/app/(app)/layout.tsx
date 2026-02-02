@@ -21,7 +21,7 @@ export default function AppLayout({
                             {/* Breadcrumbs or other header content could go here */}
                         </div>
                     </header>
-                    <div className="flex-1 overflow-auto bg-slate-950 p-4 md:p-6">
+                    <div className="flex-1 overflow-auto bg-slate-950">
                         {children}
                     </div>
                 </SidebarInset>

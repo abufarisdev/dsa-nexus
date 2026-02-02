@@ -12,6 +12,14 @@ import { DifficultyDistribution } from "@/components/difficulty-distribution"
 
 
 
+const mockTopics = [
+  { name: "Arrays & Hashing", solved: 45, total: 150, percentage: 30 },
+  { name: "Two Pointers", solved: 28, total: 90, percentage: 31 },
+  { name: "Sliding Window", solved: 15, total: 65, percentage: 23 },
+  { name: "Stack", solved: 32, total: 80, percentage: 40 },
+  { name: "Binary Search", solved: 18, total: 110, percentage: 16 },
+]
+
 function DashboardContent() {
   return (
     <div className="px-6 md:px-12 py-12">
@@ -72,7 +80,10 @@ function DashboardContent() {
             <DifficultyDistribution />
           </div>
 
-          {/* ROW 3: DSA Topic Analysis (full width) */} <div className="lg:col-span-12"> <TopicAnalysis /> </div>
+          {/* ROW 3: DSA Topic Analysis (full width) */}
+          <div className="lg:col-span-12">
+            <TopicAnalysis topics={mockTopics} />
+          </div>
 
 
         </div>
@@ -82,6 +93,20 @@ function DashboardContent() {
   )
 }
 
+import ProfilePanel from "@/components/profile-panel"
+
 export default function DashboardPage() {
-  return <DashboardContent />
+  return (
+    <div className="flex items-start">
+      {/* Profile Panel - Desktop Only */}
+      <aside className="hidden lg:block sticky top-0 h-[calc(100vh-4rem)] overflow-hidden shrink-0">
+        <ProfilePanel />
+      </aside>
+
+      {/* Main Dashboard Content */}
+      <div className="flex-1 min-w-0">
+        <DashboardContent />
+      </div>
+    </div>
+  )
 }
