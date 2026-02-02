@@ -1,6 +1,6 @@
 import { useProfileStore } from "@/lib/profile-store";
 
-const API_BASE = "/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000/api";
 
 export interface DashboardStats {
     totalSolved: number;
@@ -43,63 +43,31 @@ export interface FullStats {
     };
 }
 
-// Helper to get Authorization header or similar if needed (using authStub/middleware logic from backend, 
-// usually we rely on cookies or the backend handles auth implicitly for now since we are mocking authStub).
-// But we need the userId. Ideally, the backend knows the current user. 
-// If specific userId is needed (public profile), we pass it. 
-// For "My Profile" (dashboard), we use the logged-in user endpoints or pass the ID if known.
-// Since the backend endpoints like `/api/portfolio/:userId` require ID, we need to get it.
-// The `useProfileStore` has some user data, but maybe not the internal _id unless we saved it.
-// Let's assume for this MVP we fetch for a hardcoded user ID logic or fetch "me" if backend supports it.
-// Looking at backend: `getPortfolio` puts `userId` in params.
-// `getGitHubStats` uses `req.user` if no param.
-// Use a placeholder ID or fetch from a 'me' endpoint? 
-// The backend authStub uses '507f1f77bcf86cd799439011'. We can use this for the "My Dashboard" view 
-// if we don't have a real auth system on frontend yet.
+// Helper to get the auth token
+const getToken = () => {
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('token');
+    }
+    return null;
+};
 
-const DEMO_USER_ID = "507f1f77bcf86cd799439011";
+// Helper to set auth header
+const getAuthHeaders = () => {
+    const token = getToken();
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+};
 
 export const api = {
-    // Combined Problem Solving Stats
-    getCombinedStats: async (userId: string = DEMO_USER_ID): Promise<any> => {
-        const res = await fetch(`${API_BASE}/portfolio/${userId}`);
-        if (!res.ok) throw new Error("Failed to fetch combined stats");
-        return res.json();
-    },
-
-    // LeetCode Stats
-    getLeetCodeStats: async (userId: string = DEMO_USER_ID): Promise<any> => {
-        const res = await fetch(`${API_BASE}/platforms/leetcode/${userId}`);
-        if (!res.ok) throw new Error("Failed to fetch LeetCode stats");
-        return res.json();
-    },
-
-    // Codeforces Stats (Assumed endpoint exists or reusing/mocking structure for now if missing)
-    // Backend had `codeforcesController`, let's assume it has similar `getProfile` or we use combined.
-    // Actually, combined `getPortfolio` returns `aggregatedStats` and `topicStats`.
-    // If we want raw Codeforces, we might need to hit a specific CF endpoint if built, 
-    // or filter from combined if stored there. 
-    // Checking backend... `codeforcesController` exists.
-    getCodeforcesStats: async (userId: string = DEMO_USER_ID): Promise<any> => {
-        // Note: If distinct endpoint doesn't exist, we might have to rely on portfolio data.
-        // Let's implement fetch but handle 404.
-        const res = await fetch(`${API_BASE}/platforms/codeforces/${userId}`);
-        if (!res.ok) {
-            console.warn("Codeforces endpoint might be missing or empty");
-            return null;
-        }
-        return res.json();
-    },
-
-    // GitHub Dev Stats
-    getGitHubStats: async (userId: string = DEMO_USER_ID): Promise<any> => {
-        const res = await fetch(`${API_BASE}/devStats/github/${userId}`);
-        if (!res.ok) throw new Error("Failed to fetch GitHub stats");
-        return res.json();
-    },
-
-    // Auth
-    requestOTP: async (email: string) => {
+    // Auth - OTP based
+    requestOTP: async (email: string): Promise<any> => {
         const res = await fetch(`${API_BASE}/auth/request-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -112,7 +80,7 @@ export const api = {
         return res.json();
     },
 
-    verifyOTP: async (email: string, otp: string) => {
+    verifyOTP: async (email: string, otp: string): Promise<any> => {
         const res = await fetch(`${API_BASE}/auth/verify-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -125,7 +93,15 @@ export const api = {
         return res.json();
     },
 
-    signup: async (data: any) => {
+    signup: async (data: {
+        email: string;
+        verificationToken: string;
+        firstName: string;
+        lastName: string;
+        username: string;
+        password: string;
+        confirmPassword: string;
+    }): Promise<any> => {
         const res = await fetch(`${API_BASE}/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -138,8 +114,80 @@ export const api = {
         return res.json();
     },
 
-    logout: async () => {
-        const res = await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+    // Check username availability
+    checkUsername: async (username: string): Promise<{ available: boolean }> => {
+        const res = await fetch(`${API_BASE}/auth/check-username?username=${username}`);
+        if (!res.ok) {
+            throw new Error("Failed to check username");
+        }
         return res.json();
-    }
+    },
+
+    logout: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/auth/logout`, { 
+            method: 'POST',
+            headers: getAuthHeaders(),
+            credentials: 'include'
+        });
+        return res.json();
+    },
+
+    // User Profile
+    getProfile: async (userId?: string): Promise<any> => {
+        const id = userId || "me";
+        const res = await fetch(`${API_BASE}/profile/${id}`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+    },
+
+    updateProfile: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Failed to update profile");
+        return res.json();
+    },
+
+    // Combined Problem Solving Stats
+    getCombinedStats: async (userId: string = "me"): Promise<any> => {
+        const res = await fetch(`${API_BASE}/portfolio/${userId}`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch combined stats");
+        return res.json();
+    },
+
+    // LeetCode Stats
+    getLeetCodeStats: async (userId: string = "me"): Promise<any> => {
+        const res = await fetch(`${API_BASE}/platforms/leetcode/${userId}`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch LeetCode stats");
+        return res.json();
+    },
+
+    // Codeforces Stats
+    getCodeforcesStats: async (userId: string = "me"): Promise<any> => {
+        const res = await fetch(`${API_BASE}/platforms/codeforces/${userId}`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) {
+            console.warn("Codeforces endpoint might be missing or empty");
+            return null;
+        }
+        return res.json();
+    },
+
+    // GitHub Dev Stats
+    getGitHubStats: async (userId: string = "me"): Promise<any> => {
+        const res = await fetch(`${API_BASE}/devStats/github/${userId}`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch GitHub stats");
+        return res.json();
+    },
 };
