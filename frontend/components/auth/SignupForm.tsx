@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
 import { Check, Eye, EyeOff, Lock, User, X, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,30 +29,9 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>("weak")
+  const [acceptedTerms, setAcceptedTerms] = useState(false) // Add this state
   
-  const router = useRouter()
-
-  // Check username availability
-  useEffect(() => {
-    const checkUsername = async () => {
-      if (formData.username.length >= 3) {
-        try {
-          const data = await api.checkUsername(formData.username)
-          setUsernameAvailable(data.available)
-        } catch (error) {
-          console.error('Error checking username:', error)
-        }
-      } else {
-        setUsernameAvailable(null)
-      }
-    }
-    
-    const debounceTimer = setTimeout(checkUsername, 300)
-    return () => clearTimeout(debounceTimer)
-  }, [formData.username])
-
   // Check password strength
   useEffect(() => {
     const password = formData.password
@@ -77,7 +55,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
     const newErrors: Record<string, string> = {}
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required"
+      newErrors.fullName = "First name is required"
     }
 
     if (!formData.lastName.trim()) {
@@ -90,8 +68,6 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
       newErrors.username = "Username must be at least 3 characters"
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
       newErrors.username = "Username can only contain letters, numbers, and underscores"
-    } else if (usernameAvailable === false) {
-      newErrors.username = "Username is already taken"
     }
 
     if (!formData.password) {
@@ -102,6 +78,10 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match"
+    }
+
+    if (!acceptedTerms) { // Add this validation
+      newErrors.terms = "You must accept the terms and privacy policy"
     }
 
     setErrors(newErrors)
@@ -204,7 +184,7 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
             required
             placeholder="John"
             icon={<User className="w-4 h-4" />}
-            error={errors.firstName}
+            error={errors.fullName || errors.firstName}
             className="bg-slate-900/50 border-slate-800/50"
           />
           <Input
@@ -221,35 +201,18 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
           />
         </div>
         
-        <div className="space-y-2">
-          <Input
-            label="Username"
-            name="username"
-            type="text"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            placeholder="john_doe"
-            icon={<span className="text-slate-400 text-sm">@</span>}
-            error={errors.username}
-            className="bg-slate-900/50 border-slate-800/50"
-          />
-          {formData.username && (
-            <div className="flex items-center gap-2 text-xs ml-1">
-              {usernameAvailable === true ? (
-                <>
-                  <Check className="w-3 h-3 text-green-500" />
-                  <span className="text-green-400">Username available</span>
-                </>
-              ) : usernameAvailable === false ? (
-                <>
-                  <X className="w-3 h-3 text-red-500" />
-                  <span className="text-red-400">Username taken</span>
-                </>
-              ) : null}
-            </div>
-          )}
-        </div>
+        <Input
+          label="Username"
+          name="username"
+          type="text"
+          value={formData.username}
+          onChange={handleChange}
+          required
+          placeholder="john_doe"
+          icon={<span className="text-slate-400 text-sm">@</span>}
+          error={errors.username}
+          className="bg-slate-900/50 border-slate-800/50"
+        />
         
         <div className="space-y-2">
           <div className="relative">
@@ -327,18 +290,26 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
       </div>
 
       <div className="space-y-4">
+        {/* Fixed Terms Checkbox */}
         <div className="flex items-start space-x-2 text-sm">
           <div className="relative mt-0.5">
             <input
               type="checkbox"
-              required
-              className="sr-only"
+              id="terms-checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="sr-only peer"
             />
-            <div className="w-4 h-4 rounded border border-slate-700 bg-slate-900/50">
-              <Check className="w-4 h-4 text-cyan-500" />
-            </div>
+            <label 
+              htmlFor="terms-checkbox" 
+              className="flex items-center justify-center w-4 h-4 rounded border border-slate-700 bg-slate-900/50 cursor-pointer peer-checked:bg-gradient-to-r peer-checked:from-blue-600/20 peer-checked:to-purple-600/20"
+            >
+              {acceptedTerms && (
+                <Check className="w-3 h-3 text-cyan-500" />
+              )}
+            </label>
           </div>
-          <span className="text-slate-400">
+          <label htmlFor="terms-checkbox" className="text-slate-400 cursor-pointer select-none">
             I agree to the{" "}
             <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
               Terms of Service
@@ -347,8 +318,18 @@ export default function SignupForm({ email, verificationToken, onSuccess, onBack
             <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors">
               Privacy Policy
             </a>
-          </span>
+          </label>
         </div>
+
+        {errors.terms && (
+          <motion.p
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-red-400 text-sm"
+          >
+            {errors.terms}
+          </motion.p>
+        )}
 
         <Button
           type="submit"
