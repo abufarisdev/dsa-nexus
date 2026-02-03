@@ -13,6 +13,12 @@ const UserSchema = new mongoose.Schema({
     // Profile Fields
     profile: {
         bio: { type: String, maxLength: 200, default: '' },
+        details: {
+            aboutMe: {
+                content: { type: Object, default: {} }, // rich-text JSON
+                lastUpdatedAt: { type: Date }
+            }
+        },
         country: { type: String, default: '' },
         avatarUrl: { type: String, default: '' }
     },

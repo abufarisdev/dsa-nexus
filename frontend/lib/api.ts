@@ -171,6 +171,25 @@ export const api = {
         return res.json();
     },
 
+    // About Me
+    getAboutMe: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/about`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch about me");
+        return res.json();
+    },
+
+    updateAboutMe: async (content: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/about`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ content })
+        });
+        if (!res.ok) throw new Error("Failed to update about me");
+        return res.json();
+    },
+
     // Combined Problem Solving Stats
     getCombinedStats: async (userId: string = "me"): Promise<any> => {
         const res = await fetch(`${API_BASE}/portfolio/${userId}`, {

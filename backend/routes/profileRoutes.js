@@ -7,6 +7,10 @@ const { protect } = require('../middleware/authMiddleware'); // Assuming you hav
 router.get('/basic-info', protect, profileController.getBasicInfo);
 router.put('/basic-info', protect, profileController.updateBasicInfo);
 
+// About Me Section
+router.get('/details/about', protect, profileController.getAboutMe);
+router.put('/details/about', protect, profileController.updateAboutMe);
+
 // Legacy/Other profile routes can be added here
 // router.get('/:userId', ...);
 

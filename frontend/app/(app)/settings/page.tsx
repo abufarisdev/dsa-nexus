@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BasicInfoTab } from "@/components/settings/basic-info-tab"
+import { ProfileDetailsTab } from "@/components/settings/profile-details-tab"
 import { User, Shield, CreditCard, Layers } from "lucide-react"
 
 export default function SettingsPage() {
@@ -59,9 +60,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="profile-details" className="mt-0">
-            <div className="p-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
-              Profile Details tab content coming soon.
-            </div>
+            <ProfileDetailsTab />
           </TabsContent>
 
           <TabsContent value="platforms" className="mt-0">
