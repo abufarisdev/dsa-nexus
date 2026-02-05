@@ -190,6 +190,44 @@ export const api = {
         return res.json();
     },
 
+    // Education
+    getEducation: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/education`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch education details");
+        return res.json();
+    },
+
+    addEducation: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/education`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Failed to add education");
+        return res.json();
+    },
+
+    updateEducation: async (educationId: string, data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/education/${educationId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Failed to update education");
+        return res.json();
+    },
+
+    deleteEducation: async (educationId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/education/${educationId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to delete education");
+        return res.json();
+    },
+
     // Combined Problem Solving Stats
     getCombinedStats: async (userId: string = "me"): Promise<any> => {
         const res = await fetch(`${API_BASE}/portfolio/${userId}`, {

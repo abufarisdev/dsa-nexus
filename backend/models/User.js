@@ -17,7 +17,23 @@ const UserSchema = new mongoose.Schema({
             aboutMe: {
                 content: { type: Object, default: {} }, // rich-text JSON
                 lastUpdatedAt: { type: Date }
-            }
+            },
+            education: [{
+                degree: { type: String, required: true },
+                institution: { type: String, required: true },
+                gradeType: { type: String, enum: ['GPA', 'Percentage', 'CGPA'], required: true },
+                gradeValue: { type: Number, required: true },
+                startDate: {
+                    month: { type: String },
+                    year: { type: Number }
+                },
+                endDate: {
+                    month: { type: String },
+                    year: { type: Number }
+                },
+                createdAt: { type: Date, default: Date.now },
+                updatedAt: { type: Date }
+            }]
         },
         country: { type: String, default: '' },
         avatarUrl: { type: String, default: '' }

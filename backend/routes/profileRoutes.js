@@ -11,6 +11,12 @@ router.put('/basic-info', protect, profileController.updateBasicInfo);
 router.get('/details/about', protect, profileController.getAboutMe);
 router.put('/details/about', protect, profileController.updateAboutMe);
 
+// Education Section
+router.get('/details/education', protect, profileController.getEducation);
+router.post('/details/education', protect, profileController.addEducation);
+router.put('/details/education/:educationId', protect, profileController.updateEducation);
+router.delete('/details/education/:educationId', protect, profileController.deleteEducation);
+
 // Legacy/Other profile routes can be added here
 // router.get('/:userId', ...);
 

@@ -136,3 +136,143 @@ exports.updateAboutMe = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+// --- Education Section ---
+
+// Get Education List
+exports.getEducation = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('profile.details.education');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const education = user.profile?.details?.education || [];
+        res.json({ education });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Add Education Entry
+exports.addEducation = async (req, res) => {
+    const { degree, institution, gradeType, gradeValue, startDate, endDate } = req.body;
+
+    // Validation
+    if (!degree || !institution || !gradeType || gradeValue === undefined) {
+        return res.status(400).json({ error: 'All required fields must be provided' });
+    }
+
+    // Grade Validation
+    if (gradeType === 'GPA' && gradeValue > 4) return res.status(400).json({ error: 'GPA must be <= 4' });
+    if (gradeType === 'CGPA' && gradeValue > 10) return res.status(400).json({ error: 'CGPA must be <= 10' });
+    if (gradeType === 'Percentage' && gradeValue > 100) return res.status(400).json({ error: 'Percentage must be <= 100' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Initialize path if not exists
+        if (!user.profile) user.profile = {};
+        if (!user.profile.details) user.profile.details = {};
+        if (!user.profile.details.education) user.profile.details.education = [];
+
+        const newEducation = {
+            degree,
+            institution,
+            gradeType,
+            gradeValue,
+            startDate,
+            endDate
+        };
+
+        user.profile.details.education.push(newEducation);
+        await user.save();
+
+        res.json({
+            message: 'Education added successfully',
+            education: user.profile.details.education
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Update Education Entry
+exports.updateEducation = async (req, res) => {
+    const { educationId } = req.params;
+    const { degree, institution, gradeType, gradeValue, startDate, endDate } = req.body;
+
+    if (!educationId) return res.status(400).json({ error: 'Education ID required' });
+
+    // Grade Validation if provided
+    if (gradeType === 'GPA' && gradeValue > 4) return res.status(400).json({ error: 'GPA must be <= 4' });
+    if (gradeType === 'CGPA' && gradeValue > 10) return res.status(400).json({ error: 'CGPA must be <= 10' });
+    if (gradeType === 'Percentage' && gradeValue > 100) return res.status(400).json({ error: 'Percentage must be <= 100' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const educationEntry = user.profile.details.education.id(educationId);
+        if (!educationEntry) {
+            return res.status(404).json({ error: 'Education entry not found' });
+        }
+
+        // Update fields
+        if (degree) educationEntry.degree = degree;
+        if (institution) educationEntry.institution = institution;
+        if (gradeType) educationEntry.gradeType = gradeType;
+        if (gradeValue !== undefined) educationEntry.gradeValue = gradeValue;
+        if (startDate) educationEntry.startDate = startDate;
+        if (endDate) educationEntry.endDate = endDate;
+
+        educationEntry.updatedAt = new Date();
+
+        await user.save();
+
+        res.json({
+            message: 'Education updated successfully',
+            education: user.profile.details.education
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Delete Education Entry
+exports.deleteEducation = async (req, res) => {
+    const { educationId } = req.params;
+
+    if (!educationId) return res.status(400).json({ error: 'Education ID required' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.profile.details.education) {
+            return res.status(404).json({ error: 'No education entries found' });
+        }
+
+        // Use pull to remove the subdocument
+        user.profile.details.education.pull({ _id: educationId });
+        await user.save();
+
+        res.json({
+            message: 'Education entry deleted',
+            education: user.profile.details.education
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
