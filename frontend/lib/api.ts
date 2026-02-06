@@ -132,13 +132,31 @@ export const api = {
         return res.json();
     },
 
-    // User Profile
     getProfile: async (userId?: string): Promise<any> => {
         const id = userId || "me";
         const res = await fetch(`${API_BASE}/profile/${id}`, {
             headers: getAuthHeaders()
         });
         if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+    },
+
+    // Socials
+    getSocials: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/socials`, {
+            headers: getAuthHeaders(),
+        });
+        if (!res.ok) throw new Error("Failed to fetch socials");
+        return res.json();
+    },
+
+    updateSocials: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/socials`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error("Failed to update socials");
         return res.json();
     },
 

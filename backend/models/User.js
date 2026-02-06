@@ -59,9 +59,17 @@ const UserSchema = new mongoose.Schema({
                     year: { type: Number }
                 },
                 isCurrentlyWorking: { type: Boolean, default: false },
+                isCurrentlyWorking: { type: Boolean, default: false },
                 createdAt: { type: Date, default: Date.now },
                 updatedAt: { type: Date }
-            }]
+            }],
+            socials: {
+                linkedin: { type: String, trim: true, default: '' },
+                twitter: { type: String, trim: true, default: '' },
+                website: { type: String, trim: true, default: '' },
+                resume: { type: String, trim: true, default: '' },
+                updatedAt: { type: Date }
+            }
         },
         country: { type: String, default: '' },
         avatarUrl: { type: String, default: '' }

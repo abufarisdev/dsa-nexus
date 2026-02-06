@@ -558,3 +558,84 @@ exports.deleteWorkExperience = async (req, res) => {
     }
 };
 
+
+// --- Socials Section ---
+
+// Get Socials
+exports.getSocials = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('profile.details.socials');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const socials = user.profile?.details?.socials || {
+            linkedin: '',
+            twitter: '',
+            website: '',
+            resume: ''
+        };
+        res.json(socials);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Update Socials
+exports.updateSocials = async (req, res) => {
+    const { linkedin, twitter, website, resume } = req.body;
+
+    // Strict Validation Rules
+    const linkedinRegex = /^https:\/\/www\.linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+    const twitterRegex = /^https:\/\/(?:twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/?$/;
+    const resumeRegex = /^https:\/\/(?:drive|docs)\.google\.com(?:$|\/.*)/;
+
+    if (linkedin && !linkedinRegex.test(linkedin)) {
+        return res.status(400).json({ error: "Invalid LinkedIn profile URL. Please enter a valid LinkedIn profile link." });
+    }
+    if (twitter && !twitterRegex.test(twitter)) {
+        return res.status(400).json({ error: "Invalid X (Twitter) profile URL. Please enter a valid X profile link." });
+    }
+    if (resume && !resumeRegex.test(resume)) {
+        return res.status(400).json({ error: "Resume link must be a valid Google Drive URL." });
+    }
+    if (website) {
+        try {
+            new URL(website);
+        } catch (_) {
+            return res.status(400).json({ error: "Please enter a valid URL for your portfolio website." });
+        }
+    }
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Initialize path if not exists
+        if (!user.profile) user.profile = {};
+        if (!user.profile.details) user.profile.details = {};
+        if (!user.profile.details.socials) user.profile.details.socials = {};
+
+        // Update fields
+        if (linkedin !== undefined) user.profile.details.socials.linkedin = linkedin;
+        if (twitter !== undefined) user.profile.details.socials.twitter = twitter;
+        if (website !== undefined) user.profile.details.socials.website = website;
+        if (resume !== undefined) user.profile.details.socials.resume = resume;
+
+        user.profile.details.socials.updatedAt = new Date();
+
+        await user.save();
+
+        res.json({
+            message: 'Socials updated successfully',
+            socials: user.profile.details.socials
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+

@@ -5,6 +5,7 @@ import { AboutMeEditor } from "./about-me-editor"
 import { EducationSection } from "./education/education-section"
 import { AchievementsSection } from "./achievements/achievements-section"
 import { WorkExperienceSection } from "./experience/experience-section"
+import { SocialsSection } from "./socials/socials-section"
 import { GraduationCap, Award, Briefcase, Code, Terminal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { api } from "@/lib/api"
@@ -153,7 +154,11 @@ export function ProfileDetailsTab() {
                     <WorkExperienceSection />
                 )}
 
-                {activeTab !== "about" && activeTab !== "education" && activeTab !== "achievements" && activeTab !== "experience" && (
+                {activeTab === "socials" && (
+                    <SocialsSection />
+                )}
+
+                {activeTab !== "about" && activeTab !== "education" && activeTab !== "achievements" && activeTab !== "experience" && activeTab !== "socials" && (
                     <div className="flex flex-col items-center justify-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl">
                         <p>This section is coming soon.</p>
                     </div>

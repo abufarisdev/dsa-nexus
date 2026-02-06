@@ -29,6 +29,10 @@ router.post('/details/work-experience', protect, profileController.addWorkExperi
 router.put('/details/work-experience/:experienceId', protect, profileController.updateWorkExperience);
 router.delete('/details/work-experience/:experienceId', protect, profileController.deleteWorkExperience);
 
+// Socials Section
+router.get('/details/socials', protect, profileController.getSocials);
+router.put('/details/socials', protect, profileController.updateSocials);
+
 // Legacy/Other profile routes can be added here
 // router.get('/:userId', ...);
 
