@@ -17,6 +17,12 @@ router.post('/details/education', protect, profileController.addEducation);
 router.put('/details/education/:educationId', protect, profileController.updateEducation);
 router.delete('/details/education/:educationId', protect, profileController.deleteEducation);
 
+// Achievements Section
+router.get('/details/achievements', protect, profileController.getAchievements);
+router.post('/details/achievements', protect, profileController.addAchievement);
+router.put('/details/achievements/:achievementId', protect, profileController.updateAchievement);
+router.delete('/details/achievements/:achievementId', protect, profileController.deleteAchievement);
+
 // Legacy/Other profile routes can be added here
 // router.get('/:userId', ...);
 

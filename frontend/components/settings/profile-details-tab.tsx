@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { AboutMeEditor } from "./about-me-editor"
 import { EducationSection } from "./education/education-section"
+import { AchievementsSection } from "./achievements/achievements-section"
 import { GraduationCap, Award, Briefcase, Code, Terminal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { api } from "@/lib/api"
@@ -143,7 +144,11 @@ export function ProfileDetailsTab() {
                     <EducationSection />
                 )}
 
-                {activeTab !== "about" && activeTab !== "education" && (
+                {activeTab === "achievements" && (
+                    <AchievementsSection />
+                )}
+
+                {activeTab !== "about" && activeTab !== "education" && activeTab !== "achievements" && (
                     <div className="flex flex-col items-center justify-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl">
                         <p>This section is coming soon.</p>
                     </div>

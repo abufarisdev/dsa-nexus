@@ -276,3 +276,144 @@ exports.deleteEducation = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+// --- Achievements Section ---
+
+// Get Achievements List
+exports.getAchievements = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('profile.details.achievements');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const achievements = user.profile?.details?.achievements || [];
+        res.json({ achievements });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Add Achievement
+exports.addAchievement = async (req, res) => {
+    const { title, description, url, issueDate } = req.body;
+
+    // Validation
+    if (!title || !url) {
+        return res.status(400).json({ error: 'Title and URL are required' });
+    }
+
+    // Google Drive URL Validation
+    const googleDriveRegex = /^https?:\/\/(drive|docs)\.google\.com\/.*$/;
+    if (!googleDriveRegex.test(url)) {
+        return res.status(400).json({ error: 'URL must be a valid Google Drive link' });
+    }
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Initialize path if not exists
+        if (!user.profile) user.profile = {};
+        if (!user.profile.details) user.profile.details = {};
+        if (!user.profile.details.achievements) user.profile.details.achievements = [];
+
+        const newAchievement = {
+            title,
+            description: description || '',
+            url,
+            issueDate: issueDate || { month: '', year: null }
+        };
+
+        user.profile.details.achievements.push(newAchievement);
+        await user.save();
+
+        res.json({
+            message: 'Achievement added successfully',
+            achievements: user.profile.details.achievements
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Update Achievement
+exports.updateAchievement = async (req, res) => {
+    const { achievementId } = req.params;
+    const { title, description, url, issueDate } = req.body;
+
+    if (!achievementId) return res.status(400).json({ error: 'Achievement ID required' });
+
+    // Google Drive URL Validation if provided
+    if (url) {
+        const googleDriveRegex = /^https?:\/\/(drive|docs)\.google\.com\/.*$/;
+        if (!googleDriveRegex.test(url)) {
+            return res.status(400).json({ error: 'URL must be a valid Google Drive link' });
+        }
+    }
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const achievement = user.profile.details.achievements.id(achievementId);
+        if (!achievement) {
+            return res.status(404).json({ error: 'Achievement not found' });
+        }
+
+        // Update fields
+        if (title) achievement.title = title;
+        if (description !== undefined) achievement.description = description;
+        if (url) achievement.url = url;
+        if (issueDate) achievement.issueDate = issueDate;
+
+        achievement.updatedAt = new Date();
+
+        await user.save();
+
+        res.json({
+            message: 'Achievement updated successfully',
+            achievements: user.profile.details.achievements
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Delete Achievement
+exports.deleteAchievement = async (req, res) => {
+    const { achievementId } = req.params;
+
+    if (!achievementId) return res.status(400).json({ error: 'Achievement ID required' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.profile.details.achievements) {
+            return res.status(404).json({ error: 'No achievements found' });
+        }
+
+        // Use pull to remove the subdocument
+        user.profile.details.achievements.pull({ _id: achievementId });
+        await user.save();
+
+        res.json({
+            message: 'Achievement deleted',
+            achievements: user.profile.details.achievements
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+

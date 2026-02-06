@@ -228,6 +228,51 @@ export const api = {
         return res.json();
     },
 
+
+    // Achievements
+    getAchievements: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/achievements`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch achievements");
+        return res.json();
+    },
+
+    addAchievement: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/achievements`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Failed to add achievement");
+        }
+        return res.json();
+    },
+
+    updateAchievement: async (achievementId: string, data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/achievements/${achievementId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Failed to update achievement");
+        }
+        return res.json();
+    },
+
+    deleteAchievement: async (achievementId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/achievements/${achievementId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to delete achievement");
+        return res.json();
+    },
+
     // Combined Problem Solving Stats
     getCombinedStats: async (userId: string = "me"): Promise<any> => {
         const res = await fetch(`${API_BASE}/portfolio/${userId}`, {

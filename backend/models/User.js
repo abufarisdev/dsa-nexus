@@ -18,6 +18,17 @@ const UserSchema = new mongoose.Schema({
                 content: { type: Object, default: {} }, // rich-text JSON
                 lastUpdatedAt: { type: Date }
             },
+            achievements: [{
+                title: { type: String, required: true, trim: true },
+                description: { type: String, trim: true },
+                url: { type: String, required: true, trim: true },
+                issueDate: {
+                    month: { type: String },
+                    year: { type: Number }
+                },
+                createdAt: { type: Date, default: Date.now },
+                updatedAt: { type: Date }
+            }],
             education: [{
                 degree: { type: String, required: true },
                 institution: { type: String, required: true },
