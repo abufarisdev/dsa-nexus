@@ -23,6 +23,12 @@ router.post('/details/achievements', protect, profileController.addAchievement);
 router.put('/details/achievements/:achievementId', protect, profileController.updateAchievement);
 router.delete('/details/achievements/:achievementId', protect, profileController.deleteAchievement);
 
+// Work Experience Section
+router.get('/details/work-experience', protect, profileController.getWorkExperience);
+router.post('/details/work-experience', protect, profileController.addWorkExperience);
+router.put('/details/work-experience/:experienceId', protect, profileController.updateWorkExperience);
+router.delete('/details/work-experience/:experienceId', protect, profileController.deleteWorkExperience);
+
 // Legacy/Other profile routes can be added here
 // router.get('/:userId', ...);
 

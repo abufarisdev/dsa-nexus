@@ -43,6 +43,23 @@ const UserSchema = new mongoose.Schema({
                     year: { type: Number }
                 },
                 createdAt: { type: Date, default: Date.now },
+                createdAt: { type: Date, default: Date.now },
+                updatedAt: { type: Date }
+            }],
+            workExperience: [{
+                jobTitle: { type: String, required: true, trim: true },
+                company: { type: String, required: true, trim: true },
+                description: { type: String, trim: true },
+                startDate: {
+                    month: { type: String },
+                    year: { type: Number }
+                },
+                endDate: {
+                    month: { type: String },
+                    year: { type: Number }
+                },
+                isCurrentlyWorking: { type: Boolean, default: false },
+                createdAt: { type: Date, default: Date.now },
                 updatedAt: { type: Date }
             }]
         },

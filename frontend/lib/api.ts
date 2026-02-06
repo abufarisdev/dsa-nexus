@@ -273,6 +273,51 @@ export const api = {
         return res.json();
     },
 
+
+    // Work Experience
+    getWorkExperience: async (): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/work-experience`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to fetch work experience");
+        return res.json();
+    },
+
+    addWorkExperience: async (data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/work-experience`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Failed to add work experience");
+        }
+        return res.json();
+    },
+
+    updateWorkExperience: async (experienceId: string, data: any): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/work-experience/${experienceId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Failed to update work experience");
+        }
+        return res.json();
+    },
+
+    deleteWorkExperience: async (experienceId: string): Promise<any> => {
+        const res = await fetch(`${API_BASE}/profile/details/work-experience/${experienceId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) throw new Error("Failed to delete work experience");
+        return res.json();
+    },
+
     // Combined Problem Solving Stats
     getCombinedStats: async (userId: string = "me"): Promise<any> => {
         const res = await fetch(`${API_BASE}/portfolio/${userId}`, {

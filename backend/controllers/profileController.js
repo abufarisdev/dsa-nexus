@@ -417,3 +417,144 @@ exports.deleteAchievement = async (req, res) => {
     }
 };
 
+
+// --- Work Experience Section ---
+
+// Get Work Experience List
+exports.getWorkExperience = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('profile.details.workExperience');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const workExperience = user.profile?.details?.workExperience || [];
+        res.json({ workExperience });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Add Work Experience
+exports.addWorkExperience = async (req, res) => {
+    const { jobTitle, company, description, startDate, endDate, isCurrentlyWorking } = req.body;
+
+    // Validation
+    if (!jobTitle || !company) {
+        return res.status(400).json({ error: 'Job Title and Company are required' });
+    }
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Initialize path if not exists
+        if (!user.profile) user.profile = {};
+        if (!user.profile.details) user.profile.details = {};
+        if (!user.profile.details.workExperience) user.profile.details.workExperience = [];
+
+        const newExperience = {
+            jobTitle,
+            company,
+            description: description || '',
+            startDate: startDate || { month: '', year: null },
+            endDate: isCurrentlyWorking ? null : (endDate || { month: '', year: null }),
+            isCurrentlyWorking: !!isCurrentlyWorking
+        };
+
+        user.profile.details.workExperience.push(newExperience);
+        await user.save();
+
+        res.json({
+            message: 'Work experience added successfully',
+            workExperience: user.profile.details.workExperience
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Update Work Experience
+exports.updateWorkExperience = async (req, res) => {
+    const { experienceId } = req.params;
+    const { jobTitle, company, description, startDate, endDate, isCurrentlyWorking } = req.body;
+
+    if (!experienceId) return res.status(400).json({ error: 'Experience ID required' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const experience = user.profile.details.workExperience.id(experienceId);
+        if (!experience) {
+            return res.status(404).json({ error: 'Work experience not found' });
+        }
+
+        // Update fields
+        if (jobTitle) experience.jobTitle = jobTitle;
+        if (company) experience.company = company;
+        if (description !== undefined) experience.description = description;
+        if (startDate) experience.startDate = startDate;
+
+        if (isCurrentlyWorking !== undefined) {
+            experience.isCurrentlyWorking = isCurrentlyWorking;
+            if (isCurrentlyWorking) {
+                experience.endDate = null;
+            } else if (endDate) {
+                experience.endDate = endDate;
+            }
+        } else if (endDate) {
+            // If isCurrentlyWorking not passed but endDate is, assume implicit update
+            experience.endDate = endDate;
+        }
+
+        experience.updatedAt = new Date();
+
+        await user.save();
+
+        res.json({
+            message: 'Work experience updated successfully',
+            workExperience: user.profile.details.workExperience
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Delete Work Experience
+exports.deleteWorkExperience = async (req, res) => {
+    const { experienceId } = req.params;
+
+    if (!experienceId) return res.status(400).json({ error: 'Experience ID required' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.profile.details.workExperience) {
+            return res.status(404).json({ error: 'No work experience found' });
+        }
+
+        // Use pull to remove the subdocument
+        user.profile.details.workExperience.pull({ _id: experienceId });
+        await user.save();
+
+        res.json({
+            message: 'Work experience deleted',
+            workExperience: user.profile.details.workExperience
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
